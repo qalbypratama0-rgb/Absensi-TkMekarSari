@@ -22,4 +22,5 @@ RUN composer install --no-dev --optimize-autoloader --ignore-platform-reqs
 RUN chown -R www-data:www-data /app/storage /app/bootstrap/cache
 
 # 6. Jalankan server bawaan Laravel pada Port yang diberikan oleh Railway
-CMD php artisan serve --host=0.0.0.0 --port=${PORT:-8000}
+# Bersihkan cache, jalankan migrasi, buat akun default (seeder), lalu nyalakan server
+CMD php artisan optimize:clear && php artisan migrate --force && php artisan db:seed --force && php artisan serve --host=0.0.0.0 --port=${PORT:-8000}
