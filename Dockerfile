@@ -1,14 +1,16 @@
 # Gunakan image PHP 8.2 yang sudah lengkap dengan ekstensi
 FROM php:8.2-apache
 
-# Install sistem dependencies (gd, zip, dll)
+# Nonaktifkan MPM default yang mungkin bentrok, lalu aktifkan satu saja (mpm_prefork)
+RUN a2dismod mpm_event mpm_worker && a2enmod mpm_prefork
+
+# Install sistem dependencies
 RUN apt-get update && apt-get install -y \
     libpng-dev \
     libzip-dev \
     zip \
     unzip \
     && docker-php-ext-install gd zip pdo_mysql
-
 # Set folder kerja
 WORKDIR /var/www/html
 
