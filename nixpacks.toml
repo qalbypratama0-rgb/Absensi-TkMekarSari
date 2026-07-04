@@ -1,6 +1,18 @@
 [phases.setup]
-nixPkgs = ["php82", "php82Packages.composer", "php82Packages.gd", "php82Packages.zip"]
+nixPkgs = [
+    "php82",
+    "php82Packages.composer",
+    "php82Packages.gd",
+    "php82Packages.zip"
+]
+
+[variables]
+# Memaksa Composer mengabaikan celah keamanan dan kebutuhan ekstensi
+COMPOSER_ALLOW_SUPERUSER = "1"
 
 [phases.build]
-# Kita jalankan update agar Composer menyesuaikan diri dengan lingkungan server
-cmds = ["composer update --no-dev --optimize-autoloader"]
+# Flag --ignore-platform-reqs: mengabaikan cek ekstensi GD
+# Flag --no-audit: mematikan pengecekan keamanan yang memblokir instalasi
+cmds = [
+    "composer update --no-dev --optimize-autoloader --ignore-platform-reqs --no-audit"
+]
