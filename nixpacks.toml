@@ -1,0 +1,6 @@
+[phases.setup]
+# Kita tambahkan php82Packages.gd agar ekstensi GD terinstal
+nixPkgs = ["php82", "php82Packages.composer", "php82Packages.gd", "zip", "unzip"]
+
+[phases.build]
+cmds = ["composer install --no-dev --optimize-autoloader"]
