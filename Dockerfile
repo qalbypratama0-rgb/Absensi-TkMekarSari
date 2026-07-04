@@ -1,12 +1,6 @@
-FROM php:8.2-apache
+FROM php:8.2-cli
 
-# 1. Hapus semua konfigurasi MPM yang ada
-RUN rm -f /etc/apache2/mods-enabled/mpm_*.load /etc/apache2/mods-available/mpm_*.load
-
-# 2. Masukkan file konfigurasi MPM kita yang bersih
-COPY apache-mpm.conf /etc/apache2/mods-enabled/mpm_prefork.load
-
-# 3. Install dependencies
+# 1. Install sistem dependencies (gd, zip, pdo_mysql)
 RUN apt-get update && apt-get install -y \
     libpng-dev \
     libzip-dev \
@@ -14,15 +8,18 @@ RUN apt-get update && apt-get install -y \
     unzip \
     && docker-php-ext-install gd zip pdo_mysql
 
-WORKDIR /var/www/html
+# 2. Set direktori kerja
+WORKDIR /app
+
+# 3. Copy semua file proyek
 COPY . .
 
-# 4. Setup Apache untuk Laravel
-RUN sed -i 's|/var/www/html|/var/www/html/public|g' /etc/apache2/sites-available/000-default.conf
-RUN a2enmod rewrite
-
-# 5. Install composer
+# 4. Install composer
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 RUN composer install --no-dev --optimize-autoloader --ignore-platform-reqs
 
-RUN chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cache
+# 5. Atur permission folder Laravel
+RUN chown -R www-data:www-data /app/storage /app/bootstrap/cache
+
+# 6. Jalankan server bawaan Laravel pada Port yang diberikan oleh Railway
+CMD php artisan serve --host=0.0.0.0 --port=${PORT:-8000}
