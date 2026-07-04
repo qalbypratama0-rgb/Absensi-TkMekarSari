@@ -1,15 +1,6 @@
 [phases.setup]
-nixPkgs = [
-    "php82",
-    "php82Packages.composer",
-    "php82Packages.gd",
-    "php82Packages.zip"
-]
-
-[variables]
-# Memaksa Composer mengabaikan pengecekan ekstensi saat proses install
-COMPOSER_ALLOW_SUPERUSER = "1"
+nixPkgs = ["php82", "php82Packages.composer", "php82Packages.gd", "php82Packages.zip"]
 
 [phases.build]
-# Kita gunakan flag --ignore-platform-reqs agar build tetap lanjut meski ada masalah ekstensi
-cmds = ["composer install --no-dev --optimize-autoloader --ignore-platform-reqs"]
+# Kita jalankan update agar Composer menyesuaikan diri dengan lingkungan server
+cmds = ["composer update --no-dev --optimize-autoloader"]
